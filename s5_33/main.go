@@ -7,7 +7,11 @@ import (
 
 func shout(ping <-chan string, pong chan<- string) {
 	for {
-		s := <-ping
+		s, ok := <-ping
+		if !ok {
+			// not ok means channel lwas closed and zero value was returned
+			// do something
+		}
 		pong <- fmt.Sprintf("%s!!!", strings.ToUpper(s))
 	}
 }
