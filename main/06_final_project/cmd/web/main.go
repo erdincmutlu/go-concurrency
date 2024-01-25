@@ -15,9 +15,9 @@ const webPort = "80"
 
 func main() {
 	// connect to the database
-	initDB()
+	db := initDB()
 	db.Ping()
-	
+
 	// create sessions
 
 	// create channels
@@ -36,6 +36,8 @@ func initDB() *sql.DB {
 	if conn == nil {
 		log.Panic("can't connect to database")
 	}
+
+	return conn
 }
 
 func connectToDB() *sql.DB {
@@ -47,19 +49,19 @@ func connectToDB() *sql.DB {
 		connection, err := openDB(dsn)
 		if err != nil {
 			log.Print("postgres not yet ready...\n")
-		} else  {
+		} else {
 			log.Printf("Connected to the database\n")
 			return connection
 		}
 
-		if count > 10 {
+		if counts > 10 {
 			return nil
 		}
 
 		log.Printf("Backing off for one second")
 		time.Sleep(time.Second)
 
-		count++
+		counts++
 	}
 }
 
@@ -69,7 +71,7 @@ func openDB(dsn string) (*sql.DB, error) {
 		return nil, err
 	}
 
-	err = db..Ping()
+	err = db.Ping()
 	if err != nil {
 		return nil, err
 	}
