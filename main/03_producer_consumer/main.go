@@ -63,12 +63,12 @@ func makePizza(pizzaNumber int) *pizzaOrder {
 		time.Sleep(time.Duration(delay) * time.Second)
 
 		if rnd <= 2 {
-			msg = fmt.Sprintf("*** We ran out of ingredients for pizaa #%d!", pizzaNumber)
+			msg = fmt.Sprintf("*** We ran out of ingredients for pizza #%d!", pizzaNumber)
 		} else if rnd <= 4 {
 			msg = fmt.Sprintf("*** The cook quit while making pizza #%d!", pizzaNumber)
 		} else {
 			success = true
-			msg = fmt.Sprintf("Pizzaorder #%d is ready", pizzaNumber)
+			msg = fmt.Sprintf("Pizza order #%d is ready", pizzaNumber)
 		}
 
 		p := pizzaOrder{
@@ -105,7 +105,7 @@ func pizzeria(pizzaMaker *producer) {
 		if currentPizza != nil {
 			i = currentPizza.pizzaNumber
 			select {
-			// We tried to make a pizza (we sent something to the data channel)
+			// we tried to make a pizza (we send something to the data channel -- a chan PizzaOrder)
 			case pizzaMaker.data <- *currentPizza:
 			// we want to quit, so send pizzMaker.quit to the quitChan (a chan error)
 			case quitChan := <-pizzaMaker.quit:
@@ -132,10 +132,27 @@ func main() {
 		quit: make(chan chan error),
 	}
 
-	go pizzeria(pizzaJob)
 	// run the producer in the background
+	go pizzeria(pizzaJob)
 
 	// create and run consumer
+	for i := range pizzaJob.data {
+		if i.pizzaNumber <= NumberOfPizzas {
+			if i.success {
+				color.Green(i.message)
+				color.Green("Order #%d is out for delivery!", i.pizzaNumber)
+			} else {
+				color.Red(i.message)
+				color.Red("The customer is really mad!")
+			}
+		} else {
+			color.Cyan("Done making pizzas")
+			err := pizzaJob.Close()
+			if err != nil {
+				color.Red("*** Error closing chanel!", err)
+			}
+		}
+	}
 
 	// print out the ending message
 }
