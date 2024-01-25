@@ -1,8 +1,8 @@
 package main
 
 import (
-	"crypto/rand"
 	"fmt"
+	"math/rand"
 	"time"
 
 	"github.com/fatih/color"
@@ -59,6 +59,11 @@ func main() {
 
 	// add barbers
 	shop.addBarber("Frank")
+	shop.addBarber("Gerard")
+	shop.addBarber("Milton")
+	shop.addBarber("Susan")
+	shop.addBarber("Kelly")
+	shop.addBarber("Pat")
 
 	// start barbershop as a goroutine
 	shopClosing := make(chan bool)
@@ -74,14 +79,16 @@ func main() {
 	i := 1
 
 	go func() {
-		// get a random number with average arrival rate
-		randomMilliseconds := rand.Int() % (2 * arrivalRate)
-		select {
-		case <-shopClosing:
-			return
-		case <-time.After(time.Millisecond * time.Duration(randomMilliseconds)):
-			shop.addClient(fmt.Sprintf("Client #%d", i))
-			i++
+		for {
+			// get a random number with average arrival rate
+			randomMilliseconds := rand.Int() % (2 * arrivalRate)
+			select {
+			case <-shopClosing:
+				return
+			case <-time.After(time.Millisecond * time.Duration(randomMilliseconds)):
+				shop.addClient(fmt.Sprintf("Client #%d", i))
+				i++
+			}
 		}
 	}()
 
