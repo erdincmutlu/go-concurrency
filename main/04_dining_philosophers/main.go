@@ -39,11 +39,16 @@ var eatTime = 1 * time.Second   // how long it takes to eat
 var thinkTime = 3 * time.Second // how long a philosopher thinks
 var sleepTime = 1 * time.Second // how long to wait when printing things out
 
+var orderMutex sync.Mutex  // a amutex for the slice orderFinished
+var orderFinished []string // the order in which philosophers finish dining and leave
+
 func main() {
 	// print out a welcome message
 	fmt.Printf("Dining Philosophers Problem\n")
 	fmt.Printf("---------------------------\n")
 	fmt.Printf("Table is empty\n")
+
+	time.Sleep(sleepTime)
 
 	// start the meal
 	dine()
@@ -78,6 +83,8 @@ func dine() {
 
 	// Wait for the philosophers to finish. This blocks until the wait group is 0.
 	wg.Wait()
+
+	fmt.Printf("Order finished: %s\n", orderFinished)
 }
 
 // diningProblem is the function fired off as a goroutine for each of our philosophers. It takes one
@@ -133,4 +140,7 @@ func diningProblem(philosopher philosopher, wg *sync.WaitGroup,
 	fmt.Printf("%s is satisfied.\n", philosopher.name)
 	fmt.Printf("%s left the table.\n", philosopher.name)
 
+	orderMutex.Lock()
+	orderFinished = append(orderFinished, philosopher.name)
+	orderMutex.Unlock()
 }
