@@ -59,6 +59,14 @@ func main() {
 	shop.addBarber("Frank")
 
 	// start barbershop as a goroutine
+	shopClosing := make(chan bool)
+	closed := make(chan bool)
+	go func() {
+		<-time.After(timeOpen)
+		shopClosing <- true
+		shop.closeShopForDay()
+		closed <- true
+	}()
 
 	// add clients
 

@@ -41,7 +41,6 @@ func (shop *BarberShop) addBarber(barber string) {
 				// shop is closed, so send the barber home and close this goroutine
 				shop.sendBarberHome(barber)
 			}
-
 		}
 	}()
 }
@@ -55,4 +54,19 @@ func (shop *BarberShop) cutHair(barber string, client string) {
 func (shop *BarberShop) sendBarberHome(barber string) {
 	color.Cyan("%s is going home", barber)
 	shop.BarbersDoneChan <- true
+}
+
+func (shop *BarberShop) closeShopForDay() {
+	color.Cyan("Closing shop for the day.")
+	close(shop.ClientsChan)
+	shop.Open = false
+
+	for a := 1; a <= shop.NumberOfBarbers; a++ {
+		<-shop.BarbersDoneChan
+	}
+
+	close(shop.BarbersDoneChan)
+
+	color.Green("--------------------------------------------------------------------")
+	color.Green("The barbershop is now closed for the day, and everyone has gone home.")
 }
