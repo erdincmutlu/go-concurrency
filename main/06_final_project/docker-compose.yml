@@ -1,5 +1,7 @@
 version: '3'
 
+name: go-concurrency
+
 services:
 
   #  start Postgres, and ensure that data is stored to a mounted volume
