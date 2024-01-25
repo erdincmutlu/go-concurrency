@@ -1,5 +1,11 @@
 package main
 
+import (
+	"time"
+
+	"github.com/fatih/color"
+)
+
 // This is a simple demonstration of how to solve the Sleeping Barber dilemma, a classic computer science problem
 // which illustrates the complexities that arise when there are multiple operating system processes. Here, we have
 // a finite number of barbers, a finite number of seats in a waiting room, a fixed length of time the barbershop is
@@ -23,18 +29,37 @@ package main
 // The point of this problem, and its solution, was to make it clear that in a lot of cases, the use of
 // semaphores (mutexes) is not needed.
 
+var seatingCapacity = 10
+var arrivalRate = 100 // milliseconds
+var cutDuration = 1000 * time.Millisecond
+var timeOpen = 10 * time.Second
+
 func main() {
-    // print welcome message
+	// print welcome message
+	color.Yellow("The Sleeping Barber Problem")
+	color.Yellow("---------------------------")
 
-    // create channels if we need any
+	// create channels if we need any
+	clientChan := make(chan string, seatingCapacity)
+	doneChan := make(chan bool)
 
-    // create the barbershop
+	// create the barbershop
+	shop := BarberShop{
+		ShopCapacity:    seatingCapacity,
+		HaircutDuration: cutDuration,
+		NumberOfBarbers: 0,
+		ClientsChan:     clientChan,
+		BarbersDoneChan: doneChan,
+		Open:            true,
+	}
 
-    // add barbers
+	color.Green("The shop is open for the day!")
 
-    // start barbershop as a goroutine
+	// add barbers
 
-    // add clients
+	// start barbershop as a goroutine
 
-    // block until the barbershop is closed
+	// add clients
+
+	// block until the barbershop is closed
 }
