@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"final-project/data"
 	"fmt"
 	"log"
 	"net/http"
@@ -30,7 +31,7 @@ func main() {
 
 	// create loggers
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
-	errorLog := log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime)
+	errorLog := log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 
 	// create channels
 
@@ -44,6 +45,7 @@ func main() {
 		InfoLog:  infoLog,
 		ErrorLog: errorLog,
 		Wait:     &wg,
+		Models:   data.New(db),
 	}
 
 	// set up mail
